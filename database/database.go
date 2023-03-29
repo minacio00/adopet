@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	_ "github.com/lib/pq"
+	"github.com/minacio00/adopet/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -42,9 +43,9 @@ func Connectdb() {
 		panic(err)
 	}
 
-	println("Connection Opened to database")
-	// db.Logger = logger.Default.LogMode(logger.Info)
-	db.AutoMigrate()
+	// println("Connection Opened to database")
+	db.Logger = logger.Default.LogMode(logger.Info)
+	db.AutoMigrate(&models.Tutor{})
 
 	Db = db
 

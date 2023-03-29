@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Tutor struct {
 	gorm.Model
-	Nome     string `json:"nome"`
+	Nome     string `json:"nome" gorm:"not null"`
 	Foto     string `json:"foto"`
 	Telefone string `json:"telefone"`
 	Cidade   string `json:"cidade"`
