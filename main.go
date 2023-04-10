@@ -9,7 +9,12 @@ import (
 func main() {
 	app := fiber.New()
 	database.Connectdb()
-
 	app.Post("/tutores", handlers.CreateTutor)
+	app.Get("/tutores", handlers.ListTutors)
+
+	//todo: implementar o updatade de tutores
+	app.Patch("/tutores/:id", handlers.UpatadeTutor)
+	app.Delete("/tutores/:id", handlers.DeleteTutor)
+	app.Get("/tutores/:id", handlers.FindTutor)
 	app.Listen(":8080")
 }
