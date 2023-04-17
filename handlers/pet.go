@@ -1,12 +1,32 @@
 package handlers
 
 import (
+	"net/url"
 	"regexp"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/minacio00/adopet/database"
 	"github.com/minacio00/adopet/models"
 )
+
+func isValidImageURL(urlStr string) bool {
+	parsedURL, err := url.Parse(urlStr)
+	if err != nil {
+		return false
+	}
+
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return false
+	}
+
+	ext := strings.ToLower(parsedURL.Path[len(parsedURL.Path)-4:])
+	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".gif" {
+		return false
+	}
+
+	return true
+}
 
 func CreatePet(c *fiber.Ctx) error {
 	c.Accepts("application/json")
@@ -23,7 +43,8 @@ func CreatePet(c *fiber.Ctx) error {
 	if !regex.MatchString(pet.Nome) {
 		return c.Status(400).SendString("Campo nome com caracteres inválidos")
 	}
-	// todo: checar se pet.AbrigoID se refere a um abrigo existente
+
+	//checa se o abrigo existe
 	abrigo := models.Abrigo{}
 	err = database.Db.Model(&models.Abrigo{}).Find(&abrigo, "id = ?", pet.AbrigoID).Error
 	if err != nil {
@@ -32,5 +53,12 @@ func CreatePet(c *fiber.Ctx) error {
 	if abrigo.ID == 0 {
 		return c.Status(400).SendString("abrigo não encontrado")
 	}
-	return c.Status(200).JSON(&abrigo)
+	if !isValidImageURL(pet.Imagem) {
+		return c.Status(400).SendString("url de imagem inválida")
+	}
+	err = database.Db.Save(&pet).Error
+	if err != nil {
+		println(err.Error())
+	}
+	return c.Status(200).JSON(&pet)
 }
