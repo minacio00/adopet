@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"log"
+	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -20,10 +21,20 @@ func CreateTutor(c *fiber.Ctx) error {
 		log.Fatal(err)
 		return c.SendStatus(400)
 	}
-
 	if user.Nome == "" || user.Email == "" || user.Password == "" {
 		return c.Status(400).JSON(struct{ Body string }{
 			Body: "nome, email e password nao podem ser nulos"})
+	}
+	if len(user.Password) < 5 {
+		return c.Status(400).SendString("senha deve conter ao menos 5 caracteres")
+	}
+	regex := regexp.MustCompile(`^[a-zA-Z0-9._ç\-]+@[a-zA-Z0-9._ç\-]+\.[a-zA-Z0-9]+$`)
+	if !regex.MatchString(user.Email) {
+		return c.Status(400).SendString("email inválido")
+	}
+	regex = regexp.MustCompile(`^[a-zA-Z]+$`)
+	if !regex.MatchString(user.Nome) {
+		return c.Status(400).SendString("campo nome com caracteres inválidos")
 	}
 
 	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)

@@ -31,7 +31,7 @@ func Connectdb() {
 	creds := dbCredentials{
 		client: "postgresql", user: "postgres",
 		password: "postgresql", port: "5432",
-		host:/*"db"*/ "192.168.1.2",
+		host:/*"db"*/ "192.168.1.4",
 		database: "go-adopet",
 		ssl:      "disable",
 	}
@@ -45,7 +45,7 @@ func Connectdb() {
 
 	// println("Connection Opened to database")
 	db.Logger = logger.Default.LogMode(logger.Info)
-	db.AutoMigrate(&models.Tutor{})
+	db.AutoMigrate(&models.Abrigo{}, &models.Tutor{}, &models.Pet{})
 
 	Db = db
 
