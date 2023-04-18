@@ -16,6 +16,5 @@ func main() {
 	app.Delete("/tutores/:id", handlers.DeleteTutor)
 	app.Get("/tutores/:id", handlers.FindTutor)
 	app.Post("/pet", handlers.CreatePet)
-	app.Get("/pets", handlers.GetAllPets)
 	app.Listen(":8080")
 }
