@@ -62,3 +62,11 @@ func CreatePet(c *fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(&pet)
 }
+func GetAllPets(c *fiber.Ctx) error {
+	pets := &[]models.Pet{}
+	err := database.Db.Where(&pets).Error
+	if err != nil {
+		println(err.Error())
+	}
+	return c.Status(200).JSON(pets)
+}
