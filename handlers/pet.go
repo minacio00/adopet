@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/url"
-	"regexp"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -37,12 +36,12 @@ func CreatePet(c *fiber.Ctx) error {
 		println(err.Error())
 		return c.SendStatus(400)
 	}
-	if pet.AbrigoID == 0 || pet.Nome == "" || pet.Idade == "" || pet.Imagem == "" {
-		return c.Status(400).SendString("campos não podem estar vazios")
+	//procura por campos vazios e nomes com caracteres numericos
+	if err = pet.Validate(); err != nil {
+		return c.Status(400).SendString(err.Error())
 	}
-	regex := regexp.MustCompile(`^[a-zA-Z]+$`)
-	if !regex.MatchString(pet.Nome) {
-		return c.Status(400).SendString("Campo nome com caracteres inválidos")
+	if !isValidImageURL(pet.Imagem) {
+		return c.Status(400).SendString("url de imagem inválida")
 	}
 
 	//checa se o abrigo existe
@@ -53,9 +52,6 @@ func CreatePet(c *fiber.Ctx) error {
 	}
 	if abrigo.ID == 0 {
 		return c.Status(400).SendString("abrigo não encontrado")
-	}
-	if !isValidImageURL(pet.Imagem) {
-		return c.Status(400).SendString("url de imagem inválida")
 	}
 	err = database.Db.Save(&pet).Error
 	if err != nil {
@@ -107,12 +103,8 @@ func UpdatePet(c *fiber.Ctx) error {
 		return c.Status(404).SendString("pet não encontrado")
 	}
 
-	if body.AbrigoID == 0 || body.Nome == "" || body.Idade == "" || body.Imagem == "" {
-		return c.Status(400).SendString("campos não podem estar vazios")
-	}
-	regex := regexp.MustCompile(`^[a-zA-Z]+$`)
-	if !regex.MatchString(body.Nome) {
-		return c.Status(400).SendString("Campo nome com caracteres inválidos")
+	if err = body.Validate(); err != nil {
+		return c.Status(400).SendString(err.Error())
 	}
 
 	//checa se o abrigo existe
