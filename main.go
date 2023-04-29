@@ -22,5 +22,10 @@ func main() {
 	app.Get("/pet/:id", handlers.GetPet)
 	app.Put("/pet", handlers.UpdatePet)
 	app.Delete("/pet/:id", handlers.DeletePet)
+
+	app.Post("/abrigo", handlers.CreateAbrigo)
+	app.Get("/abrigo/:id", handlers.GetAbrigo)
+	app.Get("/abrigos", handlers.GetAbrigos)
+	app.Delete("/abrigo/:id", handlers.DeleteAbrigo)
 	app.Listen(":8080")
 }

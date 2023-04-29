@@ -11,10 +11,11 @@ type Pet struct {
 	gorm.Model
 	Nome      string `json:"nome" gorm:"not null"`
 	Descricao string `json:"descricao"`
-	AbrigoID  uint   `json:"abrigo"`
-	Adotado   bool   `json:"adotado"`
-	Idade     string `json:"idade" gorm:"not null"`
-	Imagem    string `json:"imagem"`
+	AbrigoID  uint   `json:"abrigo"` //fk
+	// Abrigo    Abrigo `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Adotado bool   `json:"adotado"`
+	Idade   string `json:"idade" gorm:"not null"`
+	Imagem  string `json:"imagem"`
 }
 
 func (p *Pet) Validate() error {
