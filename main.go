@@ -13,7 +13,7 @@ func main() {
 
 	app.Post("/tutores", handlers.CreateTutor)
 	app.Get("/tutores", handlers.ListTutors)
-	app.Patch("/tutores/:id", handlers.UpatadeTutor)
+	app.Patch("/tutores/:id", handlers.UpdateTutor)
 	app.Delete("/tutores/:id", handlers.DeleteTutor)
 	app.Get("/tutores/:id", handlers.FindTutor)
 
@@ -22,5 +22,15 @@ func main() {
 	app.Get("/pet/:id", handlers.GetPet)
 	app.Put("/pet", handlers.UpdatePet)
 	app.Delete("/pet/:id", handlers.DeletePet)
+
+	app.Post("/abrigo", handlers.CreateAbrigo)
+	app.Get("/abrigo/:id", handlers.GetAbrigo)
+	app.Get("/abrigos", handlers.GetAbrigos)
+	app.Delete("/abrigo/:id", handlers.DeleteAbrigo)
+	app.Patch("/abrigo/:id", handlers.UpdateAbrigo)
+
+	app.Post("/adocao", handlers.CreateAdocao)
+	app.Delete("/adocao/:id", handlers.DeleteAdocao)
+
 	app.Listen(":8080")
 }

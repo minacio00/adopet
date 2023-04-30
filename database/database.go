@@ -45,7 +45,7 @@ func Connectdb() {
 
 	// println("Connection Opened to database")
 	db.Logger = logger.Default.LogMode(logger.Info)
-	db.AutoMigrate(&models.Abrigo{}, &models.Tutor{}, &models.Pet{})
+	db.AutoMigrate(&models.Abrigo{}, &models.Tutor{}, &models.Pet{}, &models.Adocao{})
 
 	Db = db
 
