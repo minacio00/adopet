@@ -64,3 +64,38 @@ func DeleteAbrigo(c *fiber.Ctx) error {
 	return c.JSON(&abrigo)
 
 }
+
+func UpdateAbrigo(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil || id == 0 {
+		return c.Status(fiber.StatusBadRequest).SendString("id inválido")
+	}
+
+	body := &models.Abrigo{}
+	err = c.BodyParser(&body)
+	if err != nil {
+		println(err.Error())
+	}
+	err = body.Validate()
+	if err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	abrigo := &models.Abrigo{}
+	err = database.Db.First(&abrigo, "id = ?", id).Error
+	if err != nil {
+		println(err.Error())
+	}
+	if abrigo.ID == 0 {
+		return c.Status(400).SendString("Abrigo não encontrado")
+	}
+	err = json.Unmarshal(c.Body(), &abrigo)
+	if err != nil {
+		println(err.Error())
+	}
+	err = database.Db.Model(&abrigo).Updates(&abrigo).Error
+	if err != nil {
+		println(err.Error())
+	}
+	return c.Status(200).JSON(&abrigo)
+}

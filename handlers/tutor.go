@@ -69,7 +69,7 @@ func ListTutors(c *fiber.Ctx) error {
 	return c.Status(200).JSON(&users)
 }
 
-func UpatadeTutor(c *fiber.Ctx) error {
+func UpdateTutor(c *fiber.Ctx) error {
 	c.Accepts("application/json")
 	id, _ := c.ParamsInt("id", -1)
 
