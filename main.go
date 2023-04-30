@@ -30,5 +30,7 @@ func main() {
 	app.Patch("/abrigo/:id", handlers.UpdateAbrigo)
 
 	app.Post("/adocao", handlers.CreateAdocao)
+	app.Delete("/adocao/:id", handlers.DeleteAdocao)
+
 	app.Listen(":8080")
 }

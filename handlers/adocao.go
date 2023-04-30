@@ -69,3 +69,21 @@ func CreateAdocao(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(adocao)
 }
+func DeleteAdocao(c *fiber.Ctx) error {
+	c.Accepts("application/json")
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+	adocao := &models.Adocao{}
+	err = database.Db.First(&adocao, "id = ?", id).Error
+	if err != nil {
+		return c.Status(400).SendString("adocao nao encontrada")
+	}
+	err = database.Db.Delete(&adocao).Error
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).SendString("adocao deletada com sucesso")
+}
