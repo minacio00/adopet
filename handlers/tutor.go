@@ -5,11 +5,11 @@ import (
 	"log"
 	"regexp"
 
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/minacio00/adopet/database"
+	"github.com/minacio00/adopet/helpers"
 	"github.com/minacio00/adopet/models"
 )
 
@@ -37,11 +37,10 @@ func CreateTutor(c *fiber.Ctx) error {
 		return c.Status(400).SendString("campo nome com caracteres inválidos")
 	}
 
-	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+	user.Password, err = helpers.HashPassword(user.Password)
 	if err != nil {
-		log.Println("Error:", err)
+		return err
 	}
-	user.Password = string(bytes)
 
 	result := database.Db.Save(user)
 	if result.Error != nil {

@@ -4,10 +4,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/minacio00/adopet/database"
 	"github.com/minacio00/adopet/handlers"
+	"github.com/spf13/viper"
 )
 
 func main() {
 	app := fiber.New()
+	viper.SetConfigFile(".env")
 
 	database.Connectdb()
 
@@ -23,6 +25,8 @@ func main() {
 	app.Put("/pet", handlers.UpdatePet)
 	app.Delete("/pet/:id", handlers.DeletePet)
 
+	//todo: check if token is valid before operations
+	app.Post("/abrigos/", handlers.Login)
 	app.Post("/abrigo", handlers.CreateAbrigo)
 	app.Get("/abrigo/:id", handlers.GetAbrigo)
 	app.Get("/abrigos", handlers.GetAbrigos)
