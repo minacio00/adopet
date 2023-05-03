@@ -47,7 +47,11 @@ func GetAbrigo(c *fiber.Ctx) error {
 
 func GetAbrigos(c *fiber.Ctx) error {
 	abrigos := &[]models.Abrigo{}
-	err := database.Db.Preload("Pets").Find(&abrigos).Error
+	page := c.QueryInt("page")
+	if page == 0 {
+		page = 1
+	}
+	err := database.Db.Preload("Pets").Offset(10 * (page - 1)).Find(&abrigos).Error
 	if err != nil {
 		println(err.Error())
 	}
@@ -108,7 +112,7 @@ func UpdateAbrigo(c *fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(&abrigo)
 }
-func Login(c *fiber.Ctx) error {
+func AbrigoLogin(c *fiber.Ctx) error {
 	c.Accepts("application/json")
 	creds := &struct {
 		Login    string `json:"login"`
@@ -121,13 +125,13 @@ func Login(c *fiber.Ctx) error {
 	abrigo := &models.Abrigo{}
 	err := database.Db.First(&abrigo, "nome = ?", creds.Login).Error
 	if err != nil {
-		return c.Status(401).SendString("abrigo ou senha inválidos " + err.Error())
+		return c.Status(401).SendString("Login ou senha incorretos " + err.Error())
 	}
 	validPassword := helpers.IsValidPassword(creds.Password, abrigo.Password)
 	if !validPassword {
-		return c.Status(401).SendString("abrigo ou senha inválidos")
+		return c.Status(401).SendString("Login ou senha incorretos")
 	}
-	token, err := helpers.GenerateJWT(abrigo.Nome, abrigo.Password, "abrigo")
+	token, err := helpers.GenerateJWT(abrigo.Nome, "abrigo")
 	if err != nil {
 		return err
 	}

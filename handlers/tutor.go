@@ -53,6 +53,11 @@ func CreateTutor(c *fiber.Ctx) error {
 func ListTutors(c *fiber.Ctx) error {
 	c.Accepts("application/json")
 	// users := []models.Tutor{}
+	page := c.QueryInt("page")
+	if page == 0 {
+		page = 1
+	}
+
 	users := []struct {
 		Nome     string `json:"nome"`
 		Foto     string `json:"foto"`
@@ -61,7 +66,7 @@ func ListTutors(c *fiber.Ctx) error {
 		Sobre    string `json:"sobre"`
 		Email    string
 	}{}
-	database.Db.Model(&models.Tutor{}).Select("nome, foto, telefone, cidade, sobre, email").Find(&users)
+	database.Db.Model(&models.Tutor{}).Select("nome, foto, telefone, cidade, sobre, email").Offset(10 * (page - 1)).Find(&users)
 	if len(users) == 0 {
 		return c.Status(200).JSON(struct{ Message string }{Message: "Nenhum tutor cadastrado"})
 	}
@@ -115,4 +120,32 @@ func FindTutor(c *fiber.Ctx) error {
 	}
 
 	return c.Status(200).JSON(&tutor)
+}
+func TutorLogin(c *fiber.Ctx) error {
+	c.Accepts("application/json")
+	creds := &struct {
+		Login    string `json:"login"`
+		Password string `json:"password"`
+	}{}
+	c.BodyParser(&creds)
+	if creds.Login == "" || creds.Password == "" {
+		return c.Status(fiber.ErrBadRequest.Code).SendString("login e senha não podem ser vazios")
+	}
+	tutor := &models.Tutor{}
+	err := database.Db.First(&tutor, "email = ?", creds.Login).Error
+	if err != nil {
+		return c.Status(401).SendString("Login ou senha incorretos " + err.Error())
+	}
+	validPassword := helpers.IsValidPassword(creds.Password, tutor.Password)
+	if !validPassword {
+		return c.Status(401).SendString("Login ou senha incorretos")
+	}
+	token, err := helpers.GenerateJWT(tutor.Nome, "tutor")
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(struct {
+		Token string `json:"token"`
+	}{Token: token})
 }

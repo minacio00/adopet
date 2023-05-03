@@ -61,7 +61,12 @@ func CreatePet(c *fiber.Ctx) error {
 }
 func GetAllPets(c *fiber.Ctx) error {
 	pets := &[]models.Pet{}
-	err := database.Db.Find(&pets, "adotado = ?", false).Error
+
+	page := c.QueryInt("page")
+	if page == 0 {
+		page = 1
+	}
+	err := database.Db.Offset(10*(page-1)).Find(&pets, "adotado = ?", false).Error
 	if err != nil {
 		println(err.Error())
 	}
