@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/minacio00/adopet/database"
 	"github.com/minacio00/adopet/handlers"
+	"github.com/minacio00/adopet/middlewares"
 	"github.com/spf13/viper"
 )
 
@@ -33,6 +34,7 @@ func main() {
 	app.Delete("/abrigo/:id", handlers.DeleteAbrigo)
 	app.Patch("/abrigo/:id", handlers.UpdateAbrigo)
 
+	app.Use("/adocao/:id", middlewares.Authenticated)
 	app.Post("/adocao", handlers.CreateAdocao)
 	app.Delete("/adocao/:id", handlers.DeleteAdocao)
 

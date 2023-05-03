@@ -127,7 +127,7 @@ func Login(c *fiber.Ctx) error {
 	if !validPassword {
 		return c.Status(401).SendString("abrigo ou senha inválidos")
 	}
-	token, err := helpers.GenerateJWT(abrigo.Nome, abrigo.Password)
+	token, err := helpers.GenerateJWT(abrigo.Nome, abrigo.Password, "abrigo")
 	if err != nil {
 		return err
 	}

@@ -80,9 +80,18 @@ func DeleteAdocao(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(400).SendString("adocao nao encontrada")
 	}
+
+	pet := &models.Pet{}
+	err = database.Db.First(&pet, "id = ?", id).Error
+	if err != nil {
+		return c.Status(400).SendString("pet não encontrado")
+	}
+	pet.Adotado = false
+	database.Db.Save(&pet)
 	err = database.Db.Delete(&adocao).Error
 	if err != nil {
 		return err
+
 	}
 
 	return c.Status(200).SendString("adocao deletada com sucesso")
