@@ -47,7 +47,11 @@ func GetAbrigo(c *fiber.Ctx) error {
 
 func GetAbrigos(c *fiber.Ctx) error {
 	abrigos := &[]models.Abrigo{}
-	err := database.Db.Preload("Pets").Find(&abrigos).Error
+	page := c.QueryInt("page")
+	if page == 0 {
+		page = 1
+	}
+	err := database.Db.Preload("Pets").Offset(10 * (page - 1)).Find(&abrigos).Error
 	if err != nil {
 		println(err.Error())
 	}

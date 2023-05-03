@@ -53,6 +53,11 @@ func CreateTutor(c *fiber.Ctx) error {
 func ListTutors(c *fiber.Ctx) error {
 	c.Accepts("application/json")
 	// users := []models.Tutor{}
+	page := c.QueryInt("page")
+	if page == 0 {
+		page = 1
+	}
+
 	users := []struct {
 		Nome     string `json:"nome"`
 		Foto     string `json:"foto"`
@@ -61,7 +66,7 @@ func ListTutors(c *fiber.Ctx) error {
 		Sobre    string `json:"sobre"`
 		Email    string
 	}{}
-	database.Db.Model(&models.Tutor{}).Select("nome, foto, telefone, cidade, sobre, email").Find(&users)
+	database.Db.Model(&models.Tutor{}).Select("nome, foto, telefone, cidade, sobre, email").Offset(10 * (page - 1)).Find(&users)
 	if len(users) == 0 {
 		return c.Status(200).JSON(struct{ Message string }{Message: "Nenhum tutor cadastrado"})
 	}
