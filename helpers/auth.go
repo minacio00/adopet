@@ -8,7 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GenerateJWT(username, password, role string) (string, error) {
+// pq diabos eu to pedindo pra passar senha pra essa funcao ?
+func GenerateJWT(username, role string) (string, error) {
 	viper.SetConfigFile("../.env")
 	value := viper.GetString("SECRET_KEY")
 	if role != "abrigo" && role != "tutor" {

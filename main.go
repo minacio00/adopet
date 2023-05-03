@@ -14,6 +14,7 @@ func main() {
 
 	database.Connectdb()
 
+	app.Post("/tutores/", handlers.TutorLogin)
 	app.Post("/tutores", handlers.CreateTutor)
 	app.Get("/tutores", handlers.ListTutors)
 	app.Patch("/tutores/:id", handlers.UpdateTutor)
@@ -27,7 +28,7 @@ func main() {
 	app.Delete("/pet/:id", handlers.DeletePet)
 
 	//todo: check if token is valid before operations
-	app.Post("/abrigos/", handlers.Login)
+	app.Post("/abrigos/", handlers.AbrigoLogin)
 	app.Post("/abrigo", handlers.CreateAbrigo)
 	app.Get("/abrigo/:id", handlers.GetAbrigo)
 	app.Get("/abrigos", handlers.GetAbrigos)
