@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/minacio00/adopet/database"
+	"github.com/minacio00/adopet/helpers"
 	"github.com/minacio00/adopet/models"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,14 @@ func CreateAbrigo(c *fiber.Ctx) error {
 	err := json.Unmarshal(c.Body(), abrigo)
 	if err != nil {
 		println(err.Error())
+	}
+	err = abrigo.Validate()
+	if err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+	abrigo.Password, err = helpers.HashPassword(abrigo.Password)
+	if err != nil {
+		return err
 	}
 	err = database.Db.Create(&abrigo).Error
 	if err != nil {
@@ -98,4 +107,32 @@ func UpdateAbrigo(c *fiber.Ctx) error {
 		println(err.Error())
 	}
 	return c.Status(200).JSON(&abrigo)
+}
+func Login(c *fiber.Ctx) error {
+	c.Accepts("application/json")
+	creds := &struct {
+		Login    string `json:"login"`
+		Password string `json:"password"`
+	}{}
+	c.BodyParser(&creds)
+	if creds.Login == "" || creds.Password == "" {
+		return c.Status(fiber.ErrBadRequest.Code).SendString("login e senha não podem ser vazios")
+	}
+	abrigo := &models.Abrigo{}
+	err := database.Db.First(&abrigo, "nome = ?", creds.Login).Error
+	if err != nil {
+		return c.Status(401).SendString("abrigo ou senha inválidos " + err.Error())
+	}
+	validPassword := helpers.IsValidPassword(creds.Password, abrigo.Password)
+	if !validPassword {
+		return c.Status(401).SendString("abrigo ou senha inválidos")
+	}
+	token, err := helpers.GenerateJWT(abrigo.Nome, abrigo.Password, "abrigo")
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(struct {
+		Token string `json:"token"`
+	}{Token: token})
 }

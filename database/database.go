@@ -31,7 +31,7 @@ func Connectdb() {
 	creds := dbCredentials{
 		client: "postgresql", user: "postgres",
 		password: "postgresql", port: "5432",
-		host:/*"db"*/ "192.168.1.4",
+		host:/*"db"*/ "localhost",
 		database: "go-adopet",
 		ssl:      "disable",
 	}
