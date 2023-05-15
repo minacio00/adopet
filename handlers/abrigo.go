@@ -16,6 +16,10 @@ func CreateAbrigo(c *fiber.Ctx) error {
 	if err != nil {
 		println(err.Error())
 	}
+	err = abrigo.Validate()
+	if err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
 	err = database.Db.Create(&abrigo).Error
 	if err != nil {
 		println(err.Error())
